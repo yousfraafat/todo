@@ -1,18 +1,32 @@
-import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo/common/app_dialogs.dart';
+import 'package:todo/common/exception_codes.dart';
+import 'package:todo/common/my_text_field.dart';
 import 'package:todo/login_screens/login_screen.dart';
-import 'package:todo/login_screens/my_text_field.dart';
 import 'package:todo/my_theme.dart';
 
-class RegisterScreen extends StatelessWidget {
+import '../providers/app_auth_provider.dart';
+
+class RegisterScreen extends StatefulWidget {
   static const String routeName = 'sign up';
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   RegisterScreen({super.key});
 
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   TextEditingController userName = TextEditingController();
+
   TextEditingController email = TextEditingController();
+
   TextEditingController password = TextEditingController();
+
   TextEditingController passwordConfirmation = TextEditingController();
 
   @override
@@ -54,9 +68,9 @@ class RegisterScreen extends StatelessWidget {
                     if (text?.trim().isEmpty == true) {
                       return 'please enter your email';
                     }
-                    if (EmailValidator.validate('text')) {
-                      return 'invalid email';
-                    }
+                    // if (EmailValidator.validate('$text')) {
+                    //   return 'invalid email';
+                    // }
                     return null;
                   },
                 ),
@@ -99,7 +113,7 @@ class RegisterScreen extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            formKey.currentState?.validate();
+                            register();
                           },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
@@ -145,5 +159,61 @@ class RegisterScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void register() {
+    if (formKey.currentState?.validate() == true) {
+      createAccount();
+    }
+    return;
+  }
+
+  Future<void> createAccount() async {
+    AppAuthProvider authProvider = Provider.of<AppAuthProvider>(
+      context,
+      listen: false,
+    );
+    String message = 'something went wrong';
+    try {
+      showLoadingDialog(
+        context: context,
+        message: 'please wait ...',
+        cancelable: false,
+      );
+      final credential = authProvider.createUserWithEmailAndPassword(
+        email.text,
+        password.text,
+      );
+      popDialog(context);
+      showMessageDialog(
+        context: context,
+        message: 'account created successfully!',
+        posButtonText: 'ok',
+        posButtonTap:
+            () =>
+                Navigator.pushReplacementNamed(context, LoginScreen.routeName),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == ExceptionCodes.weakPassword) {
+        message = 'password is too weak.';
+      } else if (e.code == ExceptionCodes.emailInUse) {
+        message = 'The account already exists for that email.';
+      }
+      popDialog(context);
+      showMessageDialog(
+        context: context,
+        message: message,
+        posButtonText: 'ok',
+      );
+    } catch (e) {
+      print(e);
+      popDialog(context);
+      showMessageDialog(
+        context: context,
+        message: message,
+        posButtonText: 'try again',
+        posButtonTap: () => register(),
+      );
+    }
   }
 }

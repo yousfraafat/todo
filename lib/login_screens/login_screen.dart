@@ -1,17 +1,30 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo/home_screen.dart';
 import 'package:todo/login_screens/register_screen.dart';
 
+import '../common/app_dialogs.dart';
+import '../common/exception_codes.dart';
+import '../common/my_text_field.dart';
 import '../my_theme.dart';
-import 'my_text_field.dart';
+import '../providers/app_auth_provider.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   static const String routeName = 'login';
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   TextEditingController email = TextEditingController();
+
   TextEditingController password = TextEditingController();
 
   @override
@@ -71,7 +84,7 @@ class LoginScreen extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            formKey.currentState?.validate();
+                            login();
                           },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
@@ -117,5 +130,52 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void login() {
+    if (formKey.currentState?.validate() == true) {
+      signIn();
+    }
+    return;
+  }
+
+  Future<void> signIn() async {
+    AppAuthProvider authProvider = Provider.of<AppAuthProvider>(
+      context,
+      listen: false,
+    );
+    String message = 'something went wrong';
+    try {
+      showLoadingDialog(
+        context: context,
+        message: 'please wait ...',
+        cancelable: false,
+      );
+      final credential = authProvider.signInWithEmailAndPassword(
+        email.text,
+        password.text,
+      );
+      popDialog(context);
+      Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == ExceptionCodes.userNotFound ||
+          e.code == ExceptionCodes.wrongPassword) {
+        message = 'wrong email or password';
+      }
+      popDialog(context);
+      showMessageDialog(
+        context: context,
+        message: message,
+        posButtonText: 'ok',
+      );
+    } catch (e) {
+      popDialog(context);
+      showMessageDialog(
+        context: context,
+        message: message,
+        posButtonText: 'try again',
+        posButtonTap: () => login(),
+      );
+    }
   }
 }
