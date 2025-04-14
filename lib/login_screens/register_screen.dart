@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -68,9 +69,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     if (text?.trim().isEmpty == true) {
                       return 'please enter your email';
                     }
-                    // if (EmailValidator.validate('$text')) {
-                    //   return 'invalid email';
-                    // }
+                    if (EmailValidator.validate('$text') == false) {
+                      return 'invalid email';
+                    }
                     return null;
                   },
                 ),
@@ -180,10 +181,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
         message: 'please wait ...',
         cancelable: false,
       );
-      final credential = authProvider.createUserWithEmailAndPassword(
+      final user = await authProvider.createUserWithEmailAndPassword(
         email.text,
         password.text,
+        userName.text,
       );
+      if (user == null) {
+        popDialog(context);
+        showMessageDialog(
+          context: context,
+          message: message,
+          posButtonText: 'try again',
+          posButtonTap: () => register(),
+        );
+        return;
+      }
       popDialog(context);
       showMessageDialog(
         context: context,
@@ -206,7 +218,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         posButtonText: 'ok',
       );
     } catch (e) {
-      print(e);
       popDialog(context);
       showMessageDialog(
         context: context,

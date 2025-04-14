@@ -55,8 +55,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (text?.isEmpty == true) {
                       return 'please enter your email';
                     }
-                    if (EmailValidator.validate('text')) {
-                      return 'invalid email';
+                    if (EmailValidator.validate(text!) == false) {
+                      return 'wrong email';
                     }
                     return null;
                   },
@@ -151,12 +151,26 @@ class _LoginScreenState extends State<LoginScreen> {
         message: 'please wait ...',
         cancelable: false,
       );
-      final credential = authProvider.signInWithEmailAndPassword(
+      final user = await authProvider.signInWithEmailAndPassword(
         email.text,
         password.text,
       );
+      if (user == null) {
+        popDialog(context);
+        showMessageDialog(
+          context: context,
+          message: message,
+          posButtonText: 'try again',
+          posButtonTap: () => login(),
+        );
+        return;
+      }
       popDialog(context);
-      Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        HomeScreen.routeName,
+        (route) => false,
+      );
     } on FirebaseAuthException catch (e) {
       if (e.code == ExceptionCodes.userNotFound ||
           e.code == ExceptionCodes.wrongPassword) {
