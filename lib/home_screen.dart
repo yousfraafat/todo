@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo/providers/app_auth_provider.dart';
 import 'package:todo/tabs/settings_tab/settings_tab.dart';
 import 'package:todo/tabs/todo_list_tab/todo_list_tab.dart';
 
@@ -19,6 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppAuthProvider authProvider = Provider.of<AppAuthProvider>(context);
+    tabsTitles[0] = authProvider.tabTitle;
     return Scaffold(
       backgroundColor: Color(0xffDFECDB),
       appBar: AppBar(

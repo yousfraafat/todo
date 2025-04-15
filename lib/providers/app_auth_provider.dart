@@ -7,11 +7,25 @@ class AppAuthProvider extends ChangeNotifier {
   UsersCollection usersCollection = UsersCollection();
   User? currentUser;
   AppUser? user;
+  String tabTitle = 'To Do List';
 
   AppAuthProvider() {
     currentUser = FirebaseAuth.instance.currentUser;
+    getCurrentUser();
+  }
+
+  Future<void> getTabTitle() async {
+    if (user != null) {
+      tabTitle = 'welcome: ${user!.userName!}';
+    }
+    return;
+  }
+
+  Future<void> getCurrentUser() async {
     if (isLoggedIn()) {
-      signInWithUid(currentUser!.uid);
+      await signInWithUid(currentUser!.uid);
+      await getTabTitle();
+      notifyListeners();
     }
   }
 

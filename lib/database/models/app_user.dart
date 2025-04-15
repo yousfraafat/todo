@@ -5,7 +5,7 @@ class AppUser {
 
   AppUser({this.userName, this.email, this.authId});
 
-  AppUser.fromFireStore(Map<String, dynamic?>? data)
+  AppUser.fromFireStore(Map<String, dynamic>? data)
     : this(
         userName: data?['userName'],
         email: data?['email'],
