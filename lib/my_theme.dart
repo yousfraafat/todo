@@ -4,6 +4,32 @@ class MyTheme {
   static final Color lightSecondary = Color(0xffDFECDB);
   static final Color lightPrimary = Color(0xff5D9CEC);
   static final ThemeData lightTheme = ThemeData(
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(backgroundColor: lightPrimary),
+    ),
+    timePickerTheme: TimePickerThemeData(
+      dayPeriodColor: lightPrimary,
+      dialBackgroundColor: lightSecondary,
+      dialHandColor: lightPrimary,
+      cancelButtonStyle: ElevatedButton.styleFrom(
+        backgroundColor: lightPrimary,
+      ),
+      confirmButtonStyle: ElevatedButton.styleFrom(
+        backgroundColor: lightPrimary,
+      ),
+    ),
+    datePickerTheme: DatePickerThemeData(
+      dayForegroundColor: WidgetStatePropertyAll(Colors.black),
+      headerForegroundColor: Colors.white,
+      headerBackgroundColor: lightPrimary,
+      todayForegroundColor: WidgetStatePropertyAll(Colors.black),
+      cancelButtonStyle: ElevatedButton.styleFrom(
+        backgroundColor: lightPrimary,
+      ),
+      confirmButtonStyle: ElevatedButton.styleFrom(
+        backgroundColor: lightPrimary,
+      ),
+    ),
     appBarTheme: AppBarTheme(
       backgroundColor: lightPrimary,
       titleTextStyle: TextStyle(

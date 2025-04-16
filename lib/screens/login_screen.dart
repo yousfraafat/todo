@@ -2,33 +2,30 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/common/app_dialogs.dart';
-import 'package:todo/common/exception_codes.dart';
-import 'package:todo/common/my_text_field.dart';
-import 'package:todo/login_screens/login_screen.dart';
-import 'package:todo/my_theme.dart';
+import 'package:todo/screens/home_screen/home_screen.dart';
+import 'package:todo/screens/register_screen.dart';
 
+import '../common/app_dialogs.dart';
+import '../common/exception_codes.dart';
+import '../common/my_text_field.dart';
+import '../my_theme.dart';
 import '../providers/app_auth_provider.dart';
 
-class RegisterScreen extends StatefulWidget {
-  static const String routeName = 'sign up';
+class LoginScreen extends StatefulWidget {
+  static const String routeName = 'login';
 
-  RegisterScreen({super.key});
+  LoginScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-  TextEditingController userName = TextEditingController();
 
   TextEditingController email = TextEditingController();
 
   TextEditingController password = TextEditingController();
-
-  TextEditingController passwordConfirmation = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -48,41 +45,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Image.asset('assets/images/route_logo.png'),
                   ),
                 ),
-                MyTextField(
-                  hint: 'enter your user name',
-                  title: 'User Name',
-                  inputType: TextInputType.name,
-                  controller: userName,
-                  validator: (text) {
-                    if (text?.trim().isEmpty == true) {
-                      return 'please enter user name';
-                    }
-                    return null;
-                  },
-                ),
+                SizedBox(height: 50),
                 MyTextField(
                   hint: 'enter your email address',
                   title: 'Email address',
-                  inputType: TextInputType.emailAddress,
+                  inputType: TextInputType.name,
                   controller: email,
                   validator: (text) {
-                    if (text?.trim().isEmpty == true) {
+                    if (text?.isEmpty == true) {
                       return 'please enter your email';
                     }
-                    if (EmailValidator.validate('$text') == false) {
-                      return 'invalid email';
+                    if (EmailValidator.validate(text!) == false) {
+                      return 'wrong email';
                     }
                     return null;
                   },
                 ),
                 MyTextField(
                   hint: 'enter your password',
-                  title: 'Password',
+                  title: 'password',
                   inputType: TextInputType.visiblePassword,
                   securedPassword: true,
                   controller: password,
                   validator: (text) {
-                    if (text?.trim().isEmpty == true) {
+                    if (text?.isEmpty == true) {
                       return 'please enter password';
                     }
                     if (text!.length < 6) {
@@ -91,30 +77,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                MyTextField(
-                  hint: 'enter your password again',
-                  title: 'Password Confirmation',
-                  inputType: TextInputType.visiblePassword,
-                  securedPassword: true,
-                  controller: passwordConfirmation,
-                  validator: (text) {
-                    if (text?.trim().isEmpty == true) {
-                      return 'please enter your password';
-                    }
-                    if (text != password.text) {
-                      return "password doesn't match";
-                    }
-                    return null;
-                  },
-                ),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 15),
+                  margin: EdgeInsets.symmetric(vertical: 30),
                   child: Row(
                     children: [
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            register();
+                            login();
                           },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
@@ -123,7 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             padding: EdgeInsets.symmetric(vertical: 20),
                           ),
                           child: Text(
-                            'Sign Up',
+                            'login',
                             style: TextStyle(
                               color: MyTheme.lightPrimary,
                               fontWeight: FontWeight.bold,
@@ -138,7 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   children: [
                     Text(
-                      'already have an account?',
+                      "don't have an account?",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -148,9 +118,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onPressed:
                           () => Navigator.pushReplacementNamed(
                             context,
-                            LoginScreen.routeName,
+                            RegisterScreen.routeName,
                           ),
-                      child: Text('sign in!!', style: TextStyle(fontSize: 20)),
+                      child: Text('sign up!!', style: TextStyle(fontSize: 20)),
                     ),
                   ],
                 ),
@@ -162,14 +132,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void register() {
+  void login() {
     if (formKey.currentState?.validate() == true) {
-      createAccount();
+      signIn();
     }
     return;
   }
 
-  Future<void> createAccount() async {
+  Future<void> signIn() async {
     AppAuthProvider authProvider = Provider.of<AppAuthProvider>(
       context,
       listen: false,
@@ -181,10 +151,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         message: 'please wait ...',
         cancelable: false,
       );
-      final user = await authProvider.createUserWithEmailAndPassword(
+      final user = await authProvider.signInWithEmailAndPassword(
         email.text,
         password.text,
-        userName.text,
       );
       if (user == null) {
         popDialog(context);
@@ -192,24 +161,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
           context: context,
           message: message,
           posButtonText: 'try again',
-          posButtonTap: () => register(),
+          posButtonTap: () => login(),
         );
         return;
       }
       popDialog(context);
-      showMessageDialog(
-        context: context,
-        message: 'account created successfully!',
-        posButtonText: 'ok',
-        posButtonTap:
-            () =>
-                Navigator.pushReplacementNamed(context, LoginScreen.routeName),
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        HomeScreen.routeName,
+        (route) => false,
       );
     } on FirebaseAuthException catch (e) {
-      if (e.code == ExceptionCodes.weakPassword) {
-        message = 'password is too weak.';
-      } else if (e.code == ExceptionCodes.emailInUse) {
-        message = 'The account already exists for that email.';
+      if (e.code == ExceptionCodes.userNotFound ||
+          e.code == ExceptionCodes.wrongPassword) {
+        message = 'wrong email or password';
       }
       popDialog(context);
       showMessageDialog(
@@ -223,7 +188,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         context: context,
         message: message,
         posButtonText: 'try again',
-        posButtonTap: () => register(),
+        posButtonTap: () => login(),
       );
     }
   }

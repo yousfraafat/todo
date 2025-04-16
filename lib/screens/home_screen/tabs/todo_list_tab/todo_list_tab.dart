@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo/tabs/todo_list_tab/task_item.dart';
+import 'package:todo/screens/home_screen/tabs/todo_list_tab/task_item.dart';
 
 class TodoListTab extends StatefulWidget {
   static const String tabTitle = 'To Do List';

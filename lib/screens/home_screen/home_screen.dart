@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/providers/app_auth_provider.dart';
-import 'package:todo/tabs/settings_tab/settings_tab.dart';
-import 'package:todo/tabs/todo_list_tab/todo_list_tab.dart';
+import 'package:todo/screens/home_screen/tabs/settings_tab/settings_tab.dart';
+import 'package:todo/screens/home_screen/tabs/todo_list_tab/add_task_bottom_sheet.dart';
+import 'package:todo/screens/home_screen/tabs/todo_list_tab/todo_list_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = 'home';
@@ -24,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     AppAuthProvider authProvider = Provider.of<AppAuthProvider>(context);
     tabsTitles[0] = authProvider.tabTitle;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xffDFECDB),
       appBar: AppBar(
         title: Text(tabsTitles[selectedIndex]),
@@ -34,7 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 70,
         width: 70,
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            showAddTaskBottomSheet(context);
+          },
           child: Icon(Icons.add, color: Colors.white, size: 50),
         ),
       ),
@@ -60,6 +64,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void showAddTaskBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => AddTaskBottomSheet(),
     );
   }
 }

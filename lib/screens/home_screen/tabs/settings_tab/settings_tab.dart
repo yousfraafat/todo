@@ -3,10 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:todo/common/app_dialogs.dart';
 import 'package:todo/my_theme.dart';
 import 'package:todo/providers/app_auth_provider.dart';
-import 'package:todo/tabs/settings_tab/setting_drawer.dart';
+import 'package:todo/screens/home_screen/tabs/settings_tab/setting_drawer.dart';
 
-import '../../login_screens/login_screen.dart';
-import '../../login_screens/register_screen.dart';
+import '../../../login_screen.dart';
+import '../../../register_screen.dart';
 
 class SettingsTab extends StatelessWidget {
   static const String tabTitle = 'Settings';

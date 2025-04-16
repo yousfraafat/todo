@@ -1,13 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/home_screen.dart';
 import 'package:todo/my_theme.dart';
 import 'package:todo/providers/app_auth_provider.dart';
+import 'package:todo/screens/home_screen/home_screen.dart';
 
 import 'firebase_options.dart';
-import 'login_screens/login_screen.dart';
-import 'login_screens/register_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/register_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

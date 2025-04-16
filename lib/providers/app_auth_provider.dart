@@ -18,6 +18,7 @@ class AppAuthProvider extends ChangeNotifier {
     if (user != null) {
       tabTitle = 'welcome: ${user!.userName!}';
     }
+    notifyListeners();
     return;
   }
 
@@ -33,7 +34,7 @@ class AppAuthProvider extends ChangeNotifier {
     return currentUser != null;
   }
 
-  void login(User newUser, String uid) {
+  Future<void> login(User newUser, String uid) async {
     currentUser = newUser;
     signInWithUid(uid);
   }
@@ -74,6 +75,7 @@ class AppAuthProvider extends ChangeNotifier {
 
   Future<void> signInWithUid(String uid) async {
     user = await usersCollection.getUser(uid);
+    await getTabTitle();
     notifyListeners();
   }
 }
