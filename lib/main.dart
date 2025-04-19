@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo/my_theme.dart';
 import 'package:todo/providers/app_auth_provider.dart';
+import 'package:todo/providers/tasks_provider.dart';
 import 'package:todo/screens/home_screen/home_screen.dart';
 
 import 'firebase_options.dart';
@@ -16,6 +17,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AppAuthProvider()),
+        ChangeNotifierProvider(create: (context) => TasksProvider()),
       ],
       child: const MyApp(),
     ),

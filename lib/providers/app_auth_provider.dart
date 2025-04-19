@@ -36,7 +36,7 @@ class AppAuthProvider extends ChangeNotifier {
 
   Future<void> login(User newUser, String uid) async {
     currentUser = newUser;
-    signInWithUid(uid);
+    await signInWithUid(uid);
   }
 
   void logout() {
