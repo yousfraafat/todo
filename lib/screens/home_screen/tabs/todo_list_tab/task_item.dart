@@ -9,11 +9,16 @@ import 'package:todo/providers/app_auth_provider.dart';
 import '../../../../my_theme.dart';
 import '../../../../providers/tasks_provider.dart';
 
-class TaskItem extends StatelessWidget {
+class TaskItem extends StatefulWidget {
   Task task;
 
   TaskItem({super.key, required this.task});
 
+  @override
+  State<TaskItem> createState() => _TaskItemState();
+}
+
+class _TaskItemState extends State<TaskItem> {
   @override
   Widget build(BuildContext context) {
     TasksProvider tasksProvider = Provider.of<TasksProvider>(context);
@@ -31,7 +36,10 @@ class TaskItem extends StatelessWidget {
                   message: 'do you want to delete this task ?',
                   posButtonText: 'yes',
                   posButtonTap: () {
-                    tasksProvider.removeTask(task, authProvider.user!.authId);
+                    tasksProvider.removeTask(
+                      widget.task,
+                      authProvider.user!.authId,
+                    );
                     popDialog(context);
                   },
                   negButtonText: 'no',
@@ -66,7 +74,10 @@ class TaskItem extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: MyTheme.lightPrimary,
+                    color:
+                        widget.task.isDone == false
+                            ? MyTheme.lightPrimary
+                            : Color(0xff61E757),
                     borderRadius: BorderRadius.circular(30),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 2, vertical: 45),
@@ -76,9 +87,12 @@ class TaskItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${task.title}',
+                      '${widget.task.title}',
                       style: TextStyle(
-                        color: MyTheme.lightPrimary,
+                        color:
+                            widget.task.isDone == false
+                                ? MyTheme.lightPrimary
+                                : Color(0xff61E757),
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
                       ),
@@ -89,7 +103,7 @@ class TaskItem extends StatelessWidget {
                         Icon(Icons.watch_later_outlined),
                         SizedBox(width: 5),
                         Text(
-                          '${task.time?.formatTime()}',
+                          '${widget.task.time?.formatTime()}',
                           style: TextStyle(fontSize: 20),
                         ),
                       ],
@@ -97,19 +111,56 @@ class TaskItem extends StatelessWidget {
                   ],
                 ),
                 Spacer(),
-                Container(
-                  decoration: BoxDecoration(
-                    color: MyTheme.lightPrimary,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  margin: EdgeInsets.symmetric(horizontal: 10),
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: ImageIcon(
-                    AssetImage('assets/images/icon_check.png'),
-                    size: 40,
-                    color: Colors.white,
-                  ),
-                ),
+                widget.task.isDone == false
+                    ? InkWell(
+                      onTap: () {
+                        showLoadingDialog(
+                          context: context,
+                          message: 'please wait...',
+                        );
+                        tasksProvider.isDoneTask(
+                          widget.task,
+                          authProvider.user?.authId,
+                          true,
+                        );
+                        popDialog(context);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: MyTheme.lightPrimary,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: ImageIcon(
+                          AssetImage('assets/images/icon_check.png'),
+                          size: 40,
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+                    : InkWell(
+                      onTap: () {
+                        showLoadingDialog(
+                          context: context,
+                          message: 'please wait...',
+                        );
+                        tasksProvider.isDoneTask(
+                          widget.task,
+                          authProvider.user?.authId,
+                          false,
+                        );
+                        popDialog(context);
+                      },
+                      child: Text(
+                        'Done!',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff61E757),
+                        ),
+                      ),
+                    ),
               ],
             ),
           ),

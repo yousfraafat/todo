@@ -28,6 +28,11 @@ class TasksCollection {
     return await getTasksCollection(uid).doc(task.id).delete();
   }
 
+  Future<void> updateTask(Task task, String? uid,
+      Map<String, dynamic> updatedData) async {
+    return await getTasksCollection(uid).doc(task.id).update(updatedData);
+  }
+
   Future<List<Task>> getTasksList(uid) async {
     var snapshot = await getTasksCollection(uid).get();
     var tasksList = snapshot.docs.map((e) => e.data()).toList();

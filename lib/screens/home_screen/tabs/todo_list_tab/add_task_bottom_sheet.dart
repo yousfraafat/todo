@@ -56,7 +56,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 controller: description,
                 title: 'task description',
                 hint: 'enter task description',
-                lines: 3,
+                lines: 20,
                 validator: (text) {
                   if (text == null || text.trim().isEmpty) {
                     return 'please enter task description';

@@ -17,6 +17,12 @@ class TasksProvider extends ChangeNotifier {
     return;
   }
 
+  Future<void> isDoneTask(Task task, String? uid, bool newValue) async {
+    await tasksCollection.updateTask(task, uid, {'isDone': newValue});
+    notifyListeners();
+    return;
+  }
+
   Future<List<Task>> getAllTasks(String? uid) async {
     List<Task> tasks = await tasksCollection.getTasksList(uid);
     return tasks;
