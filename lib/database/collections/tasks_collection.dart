@@ -28,14 +28,26 @@ class TasksCollection {
     return await getTasksCollection(uid).doc(task.id).delete();
   }
 
-  Future<void> updateTask(Task task, String? uid,
-      Map<String, dynamic> updatedData) async {
+  Future<void> updateTask(
+    Task task,
+    String? uid,
+    Map<String, dynamic> updatedData,
+  ) async {
     return await getTasksCollection(uid).doc(task.id).update(updatedData);
   }
 
-  Future<List<Task>> getTasksList(uid) async {
-    var snapshot = await getTasksCollection(uid).get();
+  Future<List<Task>> getTasksList(uid, int selectedDate) async {
+    var snapshot =
+        await getTasksCollection(
+          uid,
+        ).where('date', isEqualTo: selectedDate).orderBy('time').get();
     var tasksList = snapshot.docs.map((e) => e.data()).toList();
     return tasksList;
+  }
+
+  Stream<QuerySnapshot<Task>> listenForTasks(uid, int selectedDate) async* {
+    yield* getTasksCollection(
+      uid,
+    ).where('date', isEqualTo: selectedDate).orderBy('time').snapshots();
   }
 }

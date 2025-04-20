@@ -5,6 +5,7 @@ import 'package:todo/my_theme.dart';
 import 'package:todo/providers/app_auth_provider.dart';
 import 'package:todo/providers/tasks_provider.dart';
 import 'package:todo/screens/home_screen/home_screen.dart';
+import 'package:todo/screens/task_details_screen.dart';
 
 import 'firebase_options.dart';
 import 'screens/login_screen.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         HomeScreen.routeName: (_) => HomeScreen(),
         RegisterScreen.routeName: (_) => RegisterScreen(),
         LoginScreen.routeName: (_) => LoginScreen(),
+        TaskDetailsScreen.routeName: (_) => TaskDetailsScreen()
       },
       theme: MyTheme.lightTheme,
       themeMode: ThemeMode.light,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo/database/collections/tasks_collection.dart';
 import 'package:todo/database/models/task.dart';
+import 'package:todo/date_time_utils.dart';
 
 class TasksProvider extends ChangeNotifier {
   TasksCollection tasksCollection = TasksCollection();
@@ -23,8 +24,11 @@ class TasksProvider extends ChangeNotifier {
     return;
   }
 
-  Future<List<Task>> getAllTasks(String? uid) async {
-    List<Task> tasks = await tasksCollection.getTasksList(uid);
+  Future<List<Task>> getAllTasks(String? uid, DateTime selectedDate) async {
+    List<Task> tasks = await tasksCollection.getTasksList(
+      uid,
+      selectedDate.dateOnly(),
+    );
     return tasks;
   }
 }
