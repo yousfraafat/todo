@@ -28,14 +28,18 @@ class _TodoListTabState extends State<TodoListTab> {
   @override
   void initState() {
     super.initState();
-    authProvider = Provider.of<AppAuthProvider>(context, listen: false);
-    authProvider.getCurrentUser();
-    uid = authProvider.user?.authId;
+  }
+
+  Future<void> loadData() async {
+    await authProvider.getCurrentUser();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     TasksProvider tasksProvider = Provider.of<TasksProvider>(context);
+    authProvider = Provider.of<AppAuthProvider>(context);
+    uid = authProvider.user?.authId;
     return Column(
       children: [
         EasyDateTimeLine(
@@ -66,10 +70,13 @@ class _TodoListTabState extends State<TodoListTab> {
         ),
         Expanded(
           child: StreamBuilder<QuerySnapshot<Task>>(
-            stream: tasksProvider.tasksCollection.listenForTasks(
-              uid,
+            stream:
+                uid != null
+                    ? tasksProvider.tasksCollection.listenForTasks(
+                      uid,
               selectedDate.dateOnly(),
-            ),
+                    )
+                    : const Stream<QuerySnapshot<Task>>.empty(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(

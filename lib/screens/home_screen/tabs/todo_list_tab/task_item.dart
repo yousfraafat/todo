@@ -63,7 +63,11 @@ class _TaskItemState extends State<TaskItem> {
         ),
         child: InkWell(
           onTap:
-              () => Navigator.pushNamed(context, TaskDetailsScreen.routeName),
+              () => Navigator.pushNamed(
+                context,
+                TaskDetailsScreen.routeName,
+                arguments: widget.task,
+              ),
           child: Card(
             elevation: 5,
             margin: EdgeInsets.zero,

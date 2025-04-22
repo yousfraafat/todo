@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 
 import 'my_text_field.dart';
 
+typedef OnChanged = void Function(String)?;
+
 class TaskTextField extends StatelessWidget {
   String title;
   String hint;
   int lines;
   Validator? validator;
   TextEditingController? controller;
+  OnChanged? onChanged;
+
 
   TaskTextField({
     super.key,
@@ -16,6 +20,7 @@ class TaskTextField extends StatelessWidget {
     this.lines = 1,
     this.controller,
     this.validator,
+    this.onChanged
   });
 
   @override
@@ -45,6 +50,7 @@ class TaskTextField extends StatelessWidget {
               ),
             ),
             controller: controller,
+            onChanged: onChanged,
           ),
         ],
       ),
